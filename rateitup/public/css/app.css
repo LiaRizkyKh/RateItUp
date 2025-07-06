@@ -159,3 +159,8 @@
     0% { background-position: 200% 0; }
     100% { background-position: -200% 0; }
 }
+
+.dropdown-toggle::before,
+.dropdown-toggle::after {
+    display: none !important;
+}

@@ -42,3 +42,7 @@ $(document).on("click", ".edit-review-btn", function () {
 
     $("#editReviewModal").modal("show");
 });
+
+$(function () {
+  $('.dropdown-toggle').dropdown();
+});

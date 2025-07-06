@@ -42,7 +42,7 @@
                             <div class="widget-content-wrapper">
                                 <div class="widget-content-left">
                                     <div class="btn-group">
-                                        <a data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="p-0 btn">
+                                        <a data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="p-0 btn dropdown-toggle">
                                             @php
                                             $avatar = 'user-icon.jpg';
                                             if (Auth::check()) {
@@ -283,6 +283,25 @@
 
     <script type="text/javascript" src="{{ asset('js/main.d810cf0ae7f39f28f336.js') }}"></script>
     <script type="text/javascript" src="{{ asset('js/app.js') }}"></script>
+    <script>
+        $(document).ready(function() {
+            $('.edit-review-btn').on('click', function() {
+                var id = $(this).data('id');
+                var title = $(this).data('title');
+                var content = $(this).data('content');
+                var maps_url = $(this).data('maps');
+                var url = $(this).data('url');
+
+                $('#edit_review_id').val(id);
+                $('#edit_title').val(title);
+                $('#edit_content').val(content);
+                $('#edit_maps_url').val(maps_url);
+                $('#editReviewForm').attr('action', url);
+
+                $('#editReviewModal').modal('show');
+            });
+        });
+    </script>
 </body>
 
 </html>
