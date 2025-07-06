@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="Content-Language" content="en">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Rate It Up.</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no" />
+    <meta name="description" content="This is an example dashboard created using build-in elements and components.">
+
+    <!-- Disable tap highlight on IE -->
+    <meta name="msapplication-tap-highlight" content="no">
+
+    <link href="{{ asset('css/main.d810cf0ae7f39f28f336.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+</head>
+
+<body>
+    <div class="app-container app-theme-white body-tabs-shadow fixed-header fixed-sidebar">
+        <div class="app-header header-shadow">
+            <div class="app-header__logo">
+                <h3 class="app-logo-header">Rate It Up</h3>
+            </div>
+            <div class="app-header__content">
+                <div class="app-header-left">
+                    <div class="search-wrapper">
+                        <div class="input-holder">
+                            <input type="text" class="search-input" placeholder="Type to search">
+                            <button class="search-icon"><span></span></button>
+                        </div>
+                        <button class="close"></button>
+                    </div>
+                </div>
+                <div class="app-header-right">
+                    <div class="header-btn-lg pr-0">
+                        <div class="widget-content p-0">
+                            <div class="widget-content-wrapper">
+                                <div class="widget-content-left">
+                                    <div class="btn-group">
+                                        <a data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="p-0 btn">
+                                            @php
+                                            $avatar = 'user-icon.jpg';
+                                            if (Auth::check()) {
+                                            if (Auth::user()->gender === 'Male') {
+                                            $avatar = 'boy-icon.jpg';
+                                            } elseif (Auth::user()->gender === 'Female') {
+                                            $avatar = 'girl-icon.jpg';
+                                            }
+                                            }
+                                            @endphp
+                                            <img width="42" class="rounded-circle" src="{{ asset('images/avatars/' . $avatar) }}" alt="">
+                                            @auth
+                                            <i class="fa fa-angle-down ml-2 opacity-8"></i>
+                                            @endauth
+                                        </a>
+                                        @auth
+                                        <div tabindex="-1" role="menu" aria-hidden="true" class="rm-pointers dropdown-menu-lg dropdown-menu dropdown-menu-right">
+                                            <div class="dropdown-menu-header">
+                                                <div class="dropdown-menu-header-inner bg-info">
+                                                    <div class="menu-header-image opacity-2" style="background-image: url('/images/dropdown-header/city3.jpg');"></div>
+                                                    <div class="menu-header-content text-left">
+                                                        <div class="widget-content p-0">
+                                                            <div class="widget-content-wrapper">
+                                                                <div class="widget-content-left mr-3">
+                                                                    @php
+                                                                    $avatar = 'user-icon.jpg';
+                                                                    if (Auth::check()) {
+                                                                    if (Auth::user()->gender === 'Male') {
+                                                                    $avatar = 'boy-icon.jpg';
+                                                                    } elseif (Auth::user()->gender === 'Female') {
+                                                                    $avatar = 'girl-icon.jpg';
+                                                                    }
+                                                                    }
+                                                                    @endphp
+                                                                    <img width="42" class="rounded-circle" src="{{ asset('images/avatars/' . $avatar) }}" alt="">
+                                                                </div>
+                                                                <div class="widget-content-left">
+                                                                    <div class="widget-heading">{{ Auth::check() ? Auth::user()->name : 'Guest' }}</div>
+                                                                    <div class="widget-subheading opacity-8">{{ Auth::check() ? Auth::user()->role ?? 'User' : 'Not logged in' }}</div>
+                                                                </div>
+                                                                <div class="widget-content-right mr-2">
+                                                                    <form method="POST" action="/logout">
+                                                                        @csrf
+                                                                        <button type="submit" class="btn-logout btn-pill btn-shadow btn-shine btn btn-focus">Logout</button>
+                                                                    </form>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        @endauth
+                                    </div>
+                                </div>
+                                <div class="widget-content-left  ml-3 header-user-info">
+                                    <div class="widget-heading">{{ Auth::check() ? Auth::user()->name : 'Guest' }}</div>
+                                    <div class="widget-subheading">{{ Auth::check() ? Auth::user()->role ?? 'User' : 'Not logged in' }}</div>
+                                </div>
+                                @guest
+                                <a href="/login">
+                                    <i class="fa-solid fa-right-to-bracket"></i>
+                                </a>
+                                @endguest
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="app-main">
+            <div class="app-main__outer">
+                <div class="app-main__inner">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="main-card mb-3 card">
+                                <div class="card-body">
+                                    <h2 class="card-title dancing-script">Jelajahi, Review dan Temukan Duniamu! </h2>
+                                    <div id="carousel-skeleton" class="row">
+                                        @for($i = 1; $i < 5; $i++) <div class="col-3">
+                                            <div class="slider-item mb-2"></div>
+                                    </div>
+                                    @endfor
+                                </div>
+                                <div id="carousel-slider" class="slick-slider-responsive d-none">
+                                    <div>
+                                        <div class="slider-item">1</div>
+                                    </div>
+                                    <div>
+                                        <div class="slider-item">2</div>
+                                    </div>
+                                    <div>
+                                        <div class="slider-item">3</div>
+                                    </div>
+                                    <div>
+                                        <div class="slider-item">4</div>
+                                    </div>
+                                    <div>
+                                        <div class="slider-item">5</div>
+                                    </div>
+                                    <div>
+                                        <div class="slider-item">6</div>
+                                    </div>
+                                    <div>
+                                        <div class="slider-item">7</div>
+                                    </div>
+                                    <div>
+                                        <div class="slider-item">8</div>
+                                    </div>
+                                    <div>
+                                        <div class="slider-item">9</div>
+                                    </div>
+                                    <div>
+                                        <div class="slider-item">10</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="app-page-title">
+                    <div class="page-title-wrapper">
+                        <div class="page-title-heading">
+                            <div class="page-title-icon">
+                                <i class="fa-solid fa-list-check"></i>
+                            </div>
+                            <div class="">Beranda Forum
+                                <div class="page-title-subheading">Lihat kumpulan thread dari forum pilihanmu. Bergabung dalam percakapan atau mulai thread baru untuk berbagi pemikiran.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex flex-wrap justify-content-between">
+                    <div>
+                        @auth
+                        <button type="button" class="btn btn-shadow btn-wide btn-primary" data-toggle="modal" data-target=".bd-example-modal-lg">
+                            <span class="btn-icon-wrapper pr-2 opacity-7">
+                                <i class="fa fa-plus fa-w-20"></i>
+                            </span>
+                            New thread
+                        </button>
+                        @endauth
+                    </div>
+                    <div class="col-12 col-md-3 p-0 mb-3">
+                        <input type="text" class="form-control" placeholder="Search...">
+                    </div>
+                </div>
+
+                <div class="card mb-3">
+                    <div class="card-header pl-0 pr-0">
+                        <div class="row no-gutters w-100 align-items-center">
+                            <div class="col"></div>
+                            <div class="col-4 text-muted">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col-4">Replies</div>
+                                    <div class="col-4">Last update</div>
+                                    @auth
+                                    <div class="col-4">Action</div>
+                                    @endauth
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    @foreach ($posts as $post)
+                    <div class="card-body py-3">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col">
+                                <a href="{{ route('review.show', $post->id) }}" class="text-big">{{ $post->title }}</a>
+                                <div class="text-muted small mt-1">
+                                    Created {{ $post->created_at->diffForHumans() }}
+                                    &nbsp;·&nbsp;
+                                    <a href="javascript:void(0)" class="text-muted">{{ $post->user->name }}</a>
+                                </div>
+                            </div>
+                            <div class="d-none d-md-block col-4">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col-4">0</div>
+                                    <div class="media col-4 align-items-center">
+                                        <img style="width: 40px; height: auto;" src="{{ $post->user->gender == 'Male' ? asset('images/avatars/boy-icon.jpg') : ($post->user->gender == 'Female' ? asset('images/avatars/girl-icon.jpg') : asset('images/avatars/user-icon.jpg')) }}" alt="" class="d-block ui-w-30 rounded-circle">
+                                        <div class="media-body flex-truncate ml-2">
+                                            <div class="line-height-1 text-truncate">{{ $post->updated_at->diffForHumans() }}</div>
+                                            <a href="javascript:void(0)" class="text-muted small text-truncate">by {{ $post->user->name }}</a>
+                                        </div>
+                                    </div>
+                                    @auth
+                                    @if(Auth::id() === $post->user_id || Auth::user()->role === 'Admin')
+                                    <div class="col-1 pl-3 text-left">
+                                        <div class="dropdown">
+                                            <a href="javascript:void(0)" id="actionMenu{{ $post->id }}" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                <i class="fa-solid fa-ellipsis-vertical"></i>
+                                            </a>
+                                            <div class="dropdown-menu" aria-labelledby="actionMenu{{ $post->id }}">
+                                                <a class="dropdown-item edit-review-btn" href="javascript:void(0)" data-id="{{ $post->id }}" data-title="{{ $post->title }}" data-content="{{ $post->content }}" data-maps="{{ $post->maps_url }}" data-url="{{ route('review.update', $post->id) }}">Edit</a>
+                                                <form action="{{ route('review.destroy', $post->id) }}" method="POST" onsubmit="return confirm('Are you sure?');">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button class="dropdown-item text-danger" type="submit">Delete</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    @endif
+                                    @endauth
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <hr class="m-0">
+                    @endforeach
+                </div>
+
+                <nav>
+                    <ul class="pagination mb-5">
+                        <li class="page-item disabled"><a class="page-link" href="javascript:void(0)">«</a></li>
+                        <li class="page-item active"><a class="page-link" href="javascript:void(0)">1</a></li>
+                        <li class="page-item"><a class="page-link" href="javascript:void(0)">2</a></li>
+                        <li class="page-item"><a class="page-link" href="javascript:void(0)">3</a></li>
+                        <li class="page-item"><a class="page-link" href="javascript:void(0)">4</a></li>
+                        <li class="page-item"><a class="page-link" href="javascript:void(0)">5</a></li>
+                        <li class="page-item"><a class="page-link" href="javascript:void(0)">»</a></li>
+                    </ul>
+                </nav>
+
+            </div>
+            <div class="app-wrapper-footer">
+                <div class="app-footer">
+                    <span>Copyright 2025 @ Lia Rizky Khairunnisa - Sinoo's Web (Rate It Up)</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+    <div class="app-drawer-overlay d-none animated fadeIn"></div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script type="text/javascript" src="{{ asset('js/main.d810cf0ae7f39f28f336.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('js/app.js') }}"></script>
+</body>
+
+</html>
+
+<!-- Modal Create -->
+<div class="modal fade bd-example-modal-lg" id="reviewModal" tabindex="-1" role="dialog" aria-labelledby="reviewModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <form method="POST" action="{{ route('review.store') }}" enctype="multipart/form-data">
+            @csrf
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Buat Review Baru</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Tutup">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+
+                <div class="modal-body">
+
+                    <div class="form-group">
+                        <label for="title">Judul Review</label>
+                        <input type="text" name="title" id="title" class="form-control" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="content">Isi Review</label>
+                        <textarea name="content" id="content" class="form-control" rows="5" required></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="photos">Upload Foto (max 3 foto, 5MB/foto)</label>
+                        <input type="file" name="photos[]" id="photos" class="form-control" accept="image/*" multiple required>
+                        <small class="form-text text-muted">Pilih maksimal 3 gambar. Setiap file maksimal 5MB.</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="maps_url">Tautan Titik Google Maps</label>
+                        <input type="url" name="maps_url" id="maps_url" class="form-control" placeholder="https://maps.google.com/..." required>
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+                    <button type="submit" class="btn btn-primary">Simpan Review</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal Edit -->
+<div class="modal fade bd-example-modal-lg" id="editReviewModal" tabindex="-1" role="dialog" aria-labelledby="editReviewModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <form method="POST" id="editReviewForm" enctype="multipart/form-data">
+            @csrf
+            @method('PUT')
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Review</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Tutup">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+
+                <div class="modal-body">
+
+                    <input type="hidden" id="edit_review_id">
+
+                    <div class="form-group">
+                        <label for="edit_title">Judul Review</label>
+                        <input type="text" name="title" id="edit_title" class="form-control" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="edit_content">Isi Review</label>
+                        <textarea name="content" id="edit_content" class="form-control" rows="5" required></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="edit_maps_url">Tautan Titik Google Maps</label>
+                        <input type="url" name="maps_url" id="edit_maps_url" class="form-control" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="edit_photos">Ganti Foto (optional)</label>
+                        <input type="file" name="photos[]" id="edit_photos" class="form-control" accept="image/*" multiple>
+                        <small class="form-text text-muted">Kosongkan jika tidak ingin mengganti. Max 3 foto, 5MB/foto.</small>
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+                    <button type="submit" class="btn btn-primary">Update Review</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
