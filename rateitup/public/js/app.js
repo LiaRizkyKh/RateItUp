@@ -13,22 +13,19 @@ $(document).on("click", ".edit-review-btn", function () {
     $("#editReviewModal").modal("show");
 });
 
-$(function () {
+$(window).on('load', function() {
     // Sembunyikan skeleton
-    const skeleton = document.getElementById("carousel-skeleton");
-    if (skeleton) {
-        skeleton.style.display = "none";
-    }
+    $('#carousel-skeleton').hide();
 
     // Tampilkan carousel slider
-    const slider = document.getElementById("carousel-slider");
-    if (slider) {
-        slider.classList.remove("d-none");
-    }
-    $(".slider").not('.slick-initialized').slick();
+    $('#carousel-slider').removeClass('d-none');
+
+    // Sembunyikan app-drawer-overlay
+    $('.app-drawer-overlay').addClass('d-none');
+
     // Inisialisasi Slick
     if ($(".slick-slider-responsive").length) {
-        $(".slider").not('.slick-initialized').slick({
+         $(".slider").not('.slick-initialized').slick({
             slidesToShow: 4,
             slidesToScroll: 1,
             autoplay: true,
