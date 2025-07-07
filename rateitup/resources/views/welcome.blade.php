@@ -20,6 +20,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.css"/>
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick-theme.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-bar-rating/1.2.2/themes/css-stars.min.css" />
     <link href="{{ asset('css/preloader.css') }}" rel="stylesheet">
 </head>
 
@@ -226,7 +227,7 @@
                             </div>
                             <div class="d-none d-md-block col-4">
                                 <div class="row no-gutters align-items-center">
-                                    <div class="col-4">0</div>
+                                    <div class="col-4">{{ $post->details->count() }}</div>
                                     <div class="media col-4 align-items-center">
                                         <img style="width: 40px; height: auto;" src="{{ $post->user->gender == 'Male' ? asset('images/avatars/boy-icon.jpg') : ($post->user->gender == 'Female' ? asset('images/avatars/girl-icon.jpg') : asset('images/avatars/user-icon.jpg')) }}" alt="" class="d-block ui-w-30 rounded-circle">
                                         <div class="media-body flex-truncate ml-2">
@@ -247,6 +248,7 @@
                                                    data-title="{{ $post->title }}"
                                                    data-content="{{ $post->content }}"
                                                    data-maps="{{ $post->maps_url }}"
+                                                   data-rating="{{ $post->rating }}"
                                                    data-url="{{ route('review.update', $post->id) }}"
                                                    data-photos="{{ json_encode($post->photos) }}">Edit</a>
                                                 <form action="{{ route('review.destroy', $post->id) }}" method="POST" onsubmit="return confirm('Are you sure?');">
@@ -291,6 +293,7 @@
     </div>
     <div class="app-drawer-overlay d-none animated fadeIn"></div>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-bar-rating/1.2.2/jquery.barrating.min.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
 
@@ -304,12 +307,14 @@
                 var title = $(this).data('title');
                 var content = $(this).data('content');
                 var maps_url = $(this).data('maps');
+                var rating = $(this).data('rating');
                 var url = $(this).data('url');
 
                 $('#edit_review_id').val(id);
                 $('#edit_title').val(title);
                 $('#edit_content').val(content);
                 $('#edit_maps_url').val(maps_url);
+                $('#edit_rating').barrating('set', rating);
                 $('#editReviewForm').attr('action', url);
 
                 // Clear previous photo preview and input
@@ -366,6 +371,13 @@
             });
         });
     </script>
+    <script>
+        $(function () {
+            $('#edit_rating').barrating({
+                theme: 'css-stars'
+            });
+        });
+    </script>
 </body>
 
 </html>
@@ -384,6 +396,17 @@
                 </div>
 
                 <div class="modal-body">
+
+                    <div class="form-group">
+                        <h5 class="card-title">Stars</h5>
+                        <select id="css-stars" name="rating">
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                        </select>
+                    </div>
 
                     <div class="form-group">
                         <label for="title">Judul Review</label>
@@ -405,7 +428,6 @@
                         <label for="maps_url">Tautan Titik Google Maps</label>
                         <input type="url" name="maps_url" id="maps_url" class="form-control" placeholder="https://maps.google.com/..." required>
                     </div>
-
                 </div>
 
                 <div class="modal-footer">
@@ -436,6 +458,17 @@
                     <input type="hidden" id="edit_review_id">
 
                     <div class="form-group">
+                        <h5 class="card-title">Stars</h5>
+                        <select id="edit_rating" name="rating">
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
                         <label for="edit_title">Judul Review</label>
                         <input type="text" name="title" id="edit_title" class="form-control" required>
                     </div>
@@ -456,7 +489,6 @@
                         <small class="form-text text-muted">Kosongkan jika tidak ingin mengganti. Max 3 foto, 5MB/foto.</small>
                         <div id="edit_photo_preview" class="mt-2"></div>
                     </div>
-
                 </div>
 
                 <div class="modal-footer">

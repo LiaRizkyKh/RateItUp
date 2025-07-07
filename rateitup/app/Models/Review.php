@@ -11,6 +11,7 @@ class Review extends Model
         'user_id',
         'title',
         'content',
+        'rating',
         'photos',
         'maps_url',
         'is_deleted',
@@ -37,6 +38,11 @@ class Review extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function details()
+    {
+        return $this->hasMany(ReviewDetail::class);
     }
 
     // public function replies()

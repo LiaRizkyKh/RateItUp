@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Review;
+use App\Models\ReviewDetail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -23,9 +24,8 @@ class ReviewController extends Controller
 
     public function show($id)
     {
-        $post = Review::with('user')->findOrFail($id);
-        $posts = Review::with('user')->latest()->get();
-        return view('welcome', compact('posts', 'post'));
+        $post = Review::with(['user', 'details.user'])->findOrFail($id);
+        return view('index', compact('post'));
     }
 
     public function edit($id)
@@ -52,12 +52,14 @@ class ReviewController extends Controller
             'title' => 'required|max:255',
             'content' => 'required',
             'maps_url' => 'required|url',
+            'rating' => 'required|integer|min:1|max:5',
         ]);
 
         $review->update([
             'title' => $request->title,
             'content' => $request->content,
             'maps_url' => $request->maps_url,
+            'rating' => $request->rating,
         ]);
 
         return redirect('/')->with('success', 'Review berhasil diupdate.');
@@ -81,6 +83,7 @@ class ReviewController extends Controller
             'title'     => 'required|string|max:255',
             'content'   => 'required|string',
             'maps_url'  => 'required|url',
+            'rating'    => 'required|integer|min:1|max:5',
             'photos.*'  => 'image|mimes:jpeg,png,jpg,gif|max:5120',
         ]);
 
@@ -96,11 +99,27 @@ class ReviewController extends Controller
             'user_id'    => Auth::id(),
             'title'      => $request->title,
             'content'    => $request->content,
+            'rating'     => $request->rating,
             'photos'     => $photoPaths,
             'maps_url'   => $request->maps_url,
             'is_deleted' => false,
         ]);
 
         return redirect('/')->with('success', 'Review berhasil disimpan!');
+    }
+
+    public function reply(Request $request, $id)
+    {
+        $request->validate([
+            'reply' => 'required|string',
+        ]);
+
+        ReviewDetail::create([
+            'review_id' => $id,
+            'user_id' => Auth::id(),
+            'reply' => $request->reply,
+        ]);
+
+        return back()->with('success', 'Reply posted successfully!');
     }
 }
