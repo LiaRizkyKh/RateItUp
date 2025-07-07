@@ -24,7 +24,7 @@ class ReviewController extends Controller
 
     public function show($id)
     {
-        $post = Review::with(['user.reviews', 'details.user'])->findOrFail($id);
+        $post = Review::with(['user', 'details.user'])->findOrFail($id);
         return view('welcome', ['post' => $post]);
     }
 
@@ -53,6 +53,8 @@ class ReviewController extends Controller
             'content' => 'required',
             'maps_url' => 'required|url',
             'rating' => 'required|integer|min:1|max:5',
+            'latitude' => 'nullable|numeric',
+            'longitude' => 'nullable|numeric',
         ]);
 
         $photoPaths = $review->photos ?? []; // Get existing photos
@@ -75,6 +77,8 @@ class ReviewController extends Controller
             'maps_url' => $request->maps_url,
             'rating' => $request->rating,
             'photos' => $photoPaths,
+            'latitude' => $request->latitude,
+            'longitude' => $request->longitude,
         ]);
 
         return redirect('/')->with('success', 'Review berhasil diupdate.');
@@ -100,6 +104,8 @@ class ReviewController extends Controller
             'maps_url'  => 'required|url',
             'rating'    => 'required|integer|min:1|max:5',
             'photos.*'  => 'image|mimes:jpeg,png,jpg,gif|max:5120',
+            'latitude' => 'nullable|numeric',
+            'longitude' => 'nullable|numeric',
         ]);
 
         $photoPaths = [];
@@ -117,6 +123,8 @@ class ReviewController extends Controller
             'rating'     => $request->rating,
             'photos'     => $photoPaths,
             'maps_url'   => $request->maps_url,
+            'latitude'   => $request->latitude,
+            'longitude'  => $request->longitude,
             'is_deleted' => false,
         ]);
 

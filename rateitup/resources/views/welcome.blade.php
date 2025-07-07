@@ -260,7 +260,16 @@
                                                 <i class="fa-solid fa-ellipsis-vertical"></i>
                                             </a>
                                             <div class="dropdown-menu" aria-labelledby="actionMenu{{ $post_item->id }}">
-                                                <a class="dropdown-item edit-review-btn" href="javascript:void(0)" data-id="{{ $post_item->id }}" data-title="{{ $post_item->title }}" data-content="{{ $post_item->content }}" data-maps="{{ $post_item->maps_url }}" data-rating="{{ $post_item->rating }}" data-url="{{ route('review.update', $post_item->id) }}" data-photos="{{ json_encode($post_item->photos) }}">Edit</a>
+                                                <a class="dropdown-item edit-review-btn" href="javascript:void(0)"
+                                                   data-id="{{ $post_item->id }}"
+                                                   data-title="{{ $post_item->title }}"
+                                                   data-content="{{ $post_item->content }}"
+                                                   data-maps="{{ $post_item->maps_url }}"
+                                                   data-rating="{{ $post_item->rating }}"
+                                                   data-latitude="{{ $post_item->latitude ?? 0 }}"
+                                                   data-longitude="{{ $post_item->longitude ?? 0 }}"
+                                                   data-url="{{ route('review.update', $post_item->id) }}"
+                                                   data-photos="{{ json_encode($post_item->photos) }}">Edit</a>
                                                 <form action="{{ route('review.destroy', $post_item->id) }}" method="POST" onsubmit="return confirm('Are you sure?');">
                                                     @csrf
                                                     @method('DELETE')
@@ -363,6 +372,15 @@
                     });
                 }
 
+                var latitude = parseFloat($(this).data('latitude'));
+                var longitude = parseFloat($(this).data('longitude'));
+
+                console.log('Edit button clicked. Latitude:', latitude, 'Longitude:', longitude);
+
+                // Set data attributes directly on the modal for Leaflet initialization
+                $('#editReviewModal').data('initial-latitude', latitude);
+                $('#editReviewModal').data('initial-longitude', longitude);
+
                 $('#editReviewModal').modal('show');
             });
 
@@ -389,6 +407,71 @@
             $('#editReviewModal').on('hide.bs.modal', function() {
                 $('#edit_photo_preview').empty();
                 $('#edit_photos').val('');
+            });
+
+            // Leaflet Map Initialization for Create Modal
+            var createMap;
+            var createMarker;
+
+            $('#reviewModal').on('shown.bs.modal', function () {
+                if (createMap) {
+                    createMap.remove();
+                }
+                createMap = L.map('createMap').setView([-6.2088, 106.8456], 13); // Default to Jakarta
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                }).addTo(createMap);
+
+                createMarker = L.marker(createMap.getCenter(), {draggable: true}).addTo(createMap);
+                $('#create_latitude').val(createMap.getCenter().lat);
+                $('#create_longitude').val(createMap.getCenter().lng);
+
+                createMarker.on('dragend', function(event){
+                    var markerLatLng = createMarker.getLatLng();
+                    $('#create_latitude').val(markerLatLng.lat);
+                    $('#create_longitude').val(markerLatLng.lng);
+                });
+
+                createMap.invalidateSize();
+            });
+
+            // Leaflet Map Initialization for Edit Modal
+            var editMap;
+            var editMarker;
+
+            $('#editReviewModal').on('shown.bs.modal', function () {
+                if (editMap) {
+                    editMap.remove();
+                }
+
+                // Retrieve initial coordinates from modal's data attributes
+                var initialLat = parseFloat($('#editReviewModal').data('initial-latitude'));
+                var initialLng = parseFloat($('#editReviewModal').data('initial-longitude'));
+
+                console.log('Edit modal shown. Initial Latitude:', initialLat, 'Initial Longitude:', initialLng);
+
+                // Use default if values are empty or invalid
+                if (isNaN(initialLat)) initialLat = -6.2088;
+                if (isNaN(initialLng)) initialLng = 106.8456;
+
+                // Set the hidden input fields with the (potentially defaulted) initial values
+                $('#edit_latitude').val(initialLat);
+                $('#edit_longitude').val(initialLng);
+
+                editMap = L.map('editMap').setView([initialLat, initialLng], 13);
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                }).addTo(editMap);
+
+                editMarker = L.marker([initialLat, initialLng], {draggable: true}).addTo(editMap);
+
+                editMarker.on('dragend', function(event){
+                    var markerLatLng = editMarker.getLatLng();
+                    $('#edit_latitude').val(markerLatLng.lat);
+                    $('#edit_longitude').val(markerLatLng.lng);
+                });
+
+                editMap.invalidateSize();
             });
         });
     </script>
@@ -449,6 +532,13 @@
                         <label for="maps_url">Tautan Titik Google Maps</label>
                         <input type="url" name="maps_url" id="maps_url" class="form-control" placeholder="https://maps.google.com/..." required>
                     </div>
+
+                    <div class="form-group">
+                        <label>Pilih Lokasi di Peta</label>
+                        <div id="createMap" style="height: 300px; width: 100%;"></div>
+                        <input type="hidden" name="latitude" id="create_latitude">
+                        <input type="hidden" name="longitude" id="create_longitude">
+                    </div>
                 </div>
 
                 <div class="modal-footer">
@@ -502,6 +592,13 @@
                     <div class="form-group">
                         <label for="edit_maps_url">Tautan Titik Google Maps</label>
                         <input type="url" name="maps_url" id="edit_maps_url" class="form-control" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Pilih Lokasi di Peta</label>
+                        <div id="editMap" style="height: 300px; width: 100%;"></div>
+                        <input type="hidden" name="latitude" id="edit_latitude">
+                        <input type="hidden" name="longitude" id="edit_longitude">
                     </div>
 
                     <div class="form-group">

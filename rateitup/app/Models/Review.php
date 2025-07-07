@@ -14,12 +14,16 @@ class Review extends Model
         'rating',
         'photos',
         'maps_url',
+        'latitude',
+        'longitude',
         'is_deleted',
         'deleted_at',
     ];
 
     protected $casts = [
         'photos' => 'array',
+        'latitude' => 'float',
+        'longitude' => 'float',
         'is_deleted' => 'boolean',
         'deleted_at' => 'datetime',
     ];
@@ -44,10 +48,5 @@ class Review extends Model
     {
         return $this->hasMany(ReviewDetail::class);
     }
-
-    // public function replies()
-    // {
-    //     return $this->hasMany(Reply::class);
-    // }
 
 }
