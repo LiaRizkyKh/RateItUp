@@ -216,3 +216,6 @@
 .dropdown-toggle::after {
     display: none !important;
 }
+.app-main-detail{
+    padding-top: 20px !important;
+}

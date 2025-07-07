@@ -18,10 +18,14 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.css"/>
-    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick-theme.css"/>
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick-theme.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-bar-rating/1.2.2/themes/css-stars.min.css" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <link href="{{ asset('css/preloader.css') }}" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+     crossorigin=""/>
 </head>
 
 <body>
@@ -31,7 +35,9 @@
     <div class="app-container app-theme-white body-tabs-shadow fixed-header fixed-sidebar">
         <div class="app-header header-shadow">
             <div class="app-header__logo">
-                <h3 class="app-logo-header">Rate It Up</h3>
+                <a href="/">
+                    <h3 class="app-logo-header">Rate It Up</h3>
+                </a>
             </div>
             <div class="app-header__content">
                 <div class="app-header-left">
@@ -122,6 +128,9 @@
         </div>
         <div class="app-main">
             <div class="app-main__outer">
+                @if(isset($post))
+                @include('index', ['post' => $post])
+                @else
                 <div class="app-main__inner">
                     <div class="row">
                         <div class="col-md-12">
@@ -214,44 +223,45 @@
                         </div>
                     </div>
 
-                    @foreach ($posts as $post)
+                    @foreach ($posts as $post_item)
                     <div class="card-body py-3">
                         <div class="row no-gutters align-items-center">
                             <div class="col">
-                                <a href="{{ route('review.show', $post->id) }}" class="text-big">{{ $post->title }}</a>
+                                <a href="{{ route('review.show', $post_item->id) }}" class="text-big">{{ $post_item->title }}</a>
                                 <div class="text-muted small mt-1">
-                                    Created {{ $post->created_at->diffForHumans() }}
+                                    Created {{ $post_item->created_at->diffForHumans() }}
                                     &nbsp;·&nbsp;
-                                    <a href="javascript:void(0)" class="text-muted">{{ $post->user->name }}</a>
+                                    <a href="javascript:void(0)" class="text-muted">{{ $post_item->user->name }}</a>
                                 </div>
                             </div>
                             <div class="d-none d-md-block col-4">
                                 <div class="row no-gutters align-items-center">
-                                    <div class="col-4">{{ $post->details->count() }}</div>
+                                    <div class="col-4">{{ $post_item->details ? $post_item->details->count() : 0 }}</div>
                                     <div class="media col-4 align-items-center">
-                                        <img style="width: 40px; height: auto;" src="{{ $post->user->gender == 'Male' ? asset('images/avatars/boy-icon.jpg') : ($post->user->gender == 'Female' ? asset('images/avatars/girl-icon.jpg') : asset('images/avatars/user-icon.jpg')) }}" alt="" class="d-block ui-w-30 rounded-circle">
+                                        @php
+                                        $detailAvatar = 'user-icon.jpg';
+                                        if ($post_item->user->gender === 'Male') {
+                                        $detailAvatar = 'boy-icon.jpg';
+                                        } elseif ($post_item->user->gender === 'Female') {
+                                        $detailAvatar = 'girl-icon.jpg';
+                                        }
+                                        @endphp
+                                        <img style="width: 40px; height: auto;" src="{{ asset('images/avatars/' . $detailAvatar) }}" alt="" class="d-block ui-w-30 rounded-circle">
                                         <div class="media-body flex-truncate ml-2">
-                                            <div class="line-height-1 text-truncate">{{ $post->updated_at->diffForHumans() }}</div>
-                                            <a href="javascript:void(0)" class="text-muted small text-truncate">by {{ $post->user->name }}</a>
+                                            <div class="line-height-1 text-truncate">{{ $post_item->updated_at->diffForHumans() }}</div>
+                                            <a href="javascript:void(0)" class="text-muted small text-truncate">by {{ $post_item->user->name }}</a>
                                         </div>
                                     </div>
                                     @auth
-                                    @if(Auth::id() === $post->user_id || Auth::user()->role === 'Admin')
+                                    @if(Auth::id() === $post_item->user_id || Auth::user()->role === 'Admin')
                                     <div class="col-1 pl-3 text-left">
                                         <div class="dropdown">
-                                            <a href="javascript:void(0)" id="actionMenu{{ $post->id }}" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            <a href="javascript:void(0)" id="actionMenu{{ $post_item->id }}" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                 <i class="fa-solid fa-ellipsis-vertical"></i>
                                             </a>
-                                            <div class="dropdown-menu" aria-labelledby="actionMenu{{ $post->id }}">
-                                                <a class="dropdown-item edit-review-btn" href="javascript:void(0)"
-                                                   data-id="{{ $post->id }}"
-                                                   data-title="{{ $post->title }}"
-                                                   data-content="{{ $post->content }}"
-                                                   data-maps="{{ $post->maps_url }}"
-                                                   data-rating="{{ $post->rating }}"
-                                                   data-url="{{ route('review.update', $post->id) }}"
-                                                   data-photos="{{ json_encode($post->photos) }}">Edit</a>
-                                                <form action="{{ route('review.destroy', $post->id) }}" method="POST" onsubmit="return confirm('Are you sure?');">
+                                            <div class="dropdown-menu" aria-labelledby="actionMenu{{ $post_item->id }}">
+                                                <a class="dropdown-item edit-review-btn" href="javascript:void(0)" data-id="{{ $post_item->id }}" data-title="{{ $post_item->title }}" data-content="{{ $post_item->content }}" data-maps="{{ $post_item->maps_url }}" data-rating="{{ $post_item->rating }}" data-url="{{ route('review.update', $post_item->id) }}" data-photos="{{ json_encode($post_item->photos) }}">Edit</a>
+                                                <form action="{{ route('review.destroy', $post_item->id) }}" method="POST" onsubmit="return confirm('Are you sure?');">
                                                     @csrf
                                                     @method('DELETE')
                                                     <button class="dropdown-item text-danger" type="submit">Delete</button>
@@ -261,7 +271,6 @@
                                     </div>
                                     @endif
                                     @endauth
-
                                 </div>
                             </div>
                         </div>
@@ -281,8 +290,8 @@
                         <li class="page-item"><a class="page-link" href="javascript:void(0)">»</a></li>
                     </ul>
                 </nav>
-
             </div>
+            @endif
             <div class="app-wrapper-footer">
                 <div class="app-footer">
                     <span>Copyright 2025 @ Lia Rizky Khairunnisa - Sinoo's Web (Rate It Up)</span>
@@ -292,16 +301,31 @@
     </div>
     </div>
     <div class="app-drawer-overlay d-none animated fadeIn"></div>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-bar-rating/1.2.2/jquery.barrating.min.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+     crossorigin=""></script>
 
     <script type="text/javascript" src="{{ asset('js/main.d810cf0ae7f39f28f336.js') }}"></script>
     <script type="text/javascript" src="{{ asset('js/app.js') }}"></script>
     <script src="{{ asset('js/preloader.js') }}"></script>
     <script>
         $(document).ready(function() {
+            // Initialize slick slider for welcome page if not on detail page
+            @if(!isset($post) || !$post)
+                $('#carousel-slider').slick({
+                    dots: true,
+                    infinite: true,
+                    speed: 500,
+                    slidesToShow: 1,
+                    slidesToScroll: 1,
+                    autoplay: true,
+                    autoplaySpeed: 2000,
+                });
+            @endif
+
             $('.edit-review-btn').on('click', function() {
                 var id = $(this).data('id');
                 var title = $(this).data('title');
@@ -323,16 +347,13 @@
 
                 // Fetch and display existing photos if any
                 var postId = $(this).data('id');
-                // Assuming there's a way to get existing photos, e.g., from a data attribute or an AJAX call
-                // For now, let's assume a data attribute `data-photos` on the edit button
-                // Example: data-photos='["url1", "url2"]'
                 var existingPhotos = $(this).data('photos');
 
                 if (existingPhotos && existingPhotos.length > 0) {
                     existingPhotos.forEach(function(photoUrl) {
-                    console.log(photoUrl);
+                        console.log(photoUrl);
                         var img = $('<img>').attr('src', photoUrl).css({
-                            'max-width': '100px', // Smaller preview for existing photos
+                            'max-width': '100px',
                             'height': 'auto',
                             'margin-right': '10px',
                             'margin-top': '10px',
@@ -347,7 +368,7 @@
 
             $('#edit_photos').on('change', function() {
                 var previewContainer = $('#edit_photo_preview');
-                previewContainer.empty(); // Clear previous previews
+                previewContainer.empty();
 
                 if (this.files && this.files[0]) {
                     var reader = new FileReader();

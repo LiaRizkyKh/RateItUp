@@ -18,14 +18,14 @@ class ReviewController extends Controller
 
     public function index()
     {
-        $posts = Review::with('user')->latest()->get();
-        return view('welcome', compact('posts'));
+        $posts = Review::with(['user', 'details'])->latest()->get();
+        return view('welcome', ['posts' => $posts]);
     }
 
     public function show($id)
     {
-        $post = Review::with(['user', 'details.user'])->findOrFail($id);
-        return view('index', compact('post'));
+        $post = Review::with(['user.reviews', 'details.user'])->findOrFail($id);
+        return view('welcome', ['post' => $post]);
     }
 
     public function edit($id)
@@ -55,11 +55,26 @@ class ReviewController extends Controller
             'rating' => 'required|integer|min:1|max:5',
         ]);
 
+        $photoPaths = $review->photos ?? []; // Get existing photos
+
+        if ($request->hasFile('photos')) {
+            // Delete old photos if new ones are uploaded
+            foreach ($photoPaths as $oldPhoto) {
+                Storage::disk('public')->delete($oldPhoto);
+            }
+            $photoPaths = []; // Reset photoPaths for new uploads
+
+            foreach ($request->file('photos') as $file) {
+                $photoPaths[] = $file->store('reviews/photos', 'public');
+            }
+        }
+
         $review->update([
             'title' => $request->title,
             'content' => $request->content,
             'maps_url' => $request->maps_url,
             'rating' => $request->rating,
+            'photos' => $photoPaths,
         ]);
 
         return redirect('/')->with('success', 'Review berhasil diupdate.');
