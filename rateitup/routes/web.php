@@ -1,6 +1,10 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+
+Route::get('storage/{path}', [App\Http\Controllers\ReviewController::class, 'storage'])
+    ->where('path', '.*')
+    ->name('storage');
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\ReviewController;

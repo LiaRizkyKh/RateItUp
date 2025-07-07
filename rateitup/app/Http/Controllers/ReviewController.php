@@ -5,9 +5,15 @@ namespace App\Http\Controllers;
 use App\Models\Review;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class ReviewController extends Controller
 {
+
+    public function storage($path)
+    {
+        return Storage::disk('public')->response($path);
+    }
 
     public function index()
     {

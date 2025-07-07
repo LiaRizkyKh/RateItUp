@@ -23,6 +23,17 @@ class Review extends Model
         'deleted_at' => 'datetime',
     ];
 
+    public function getPhotosAttribute($value)
+    {
+        $photos = json_decode($value, true);
+        if (is_array($photos)) {
+            return array_map(function ($photo) {
+                return route('storage', ['path' => $photo]);
+            }, $photos);
+        }
+        return [];
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class);

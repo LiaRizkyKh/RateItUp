@@ -242,7 +242,13 @@
                                                 <i class="fa-solid fa-ellipsis-vertical"></i>
                                             </a>
                                             <div class="dropdown-menu" aria-labelledby="actionMenu{{ $post->id }}">
-                                                <a class="dropdown-item edit-review-btn" href="javascript:void(0)" data-id="{{ $post->id }}" data-title="{{ $post->title }}" data-content="{{ $post->content }}" data-maps="{{ $post->maps_url }}" data-url="{{ route('review.update', $post->id) }}">Edit</a>
+                                                <a class="dropdown-item edit-review-btn" href="javascript:void(0)"
+                                                   data-id="{{ $post->id }}"
+                                                   data-title="{{ $post->title }}"
+                                                   data-content="{{ $post->content }}"
+                                                   data-maps="{{ $post->maps_url }}"
+                                                   data-url="{{ route('review.update', $post->id) }}"
+                                                   data-photos="{{ json_encode($post->photos) }}">Edit</a>
                                                 <form action="{{ route('review.destroy', $post->id) }}" method="POST" onsubmit="return confirm('Are you sure?');">
                                                     @csrf
                                                     @method('DELETE')
@@ -306,7 +312,57 @@
                 $('#edit_maps_url').val(maps_url);
                 $('#editReviewForm').attr('action', url);
 
+                // Clear previous photo preview and input
+                $('#edit_photo_preview').empty();
+                $('#edit_photos').val('');
+
+                // Fetch and display existing photos if any
+                var postId = $(this).data('id');
+                // Assuming there's a way to get existing photos, e.g., from a data attribute or an AJAX call
+                // For now, let's assume a data attribute `data-photos` on the edit button
+                // Example: data-photos='["url1", "url2"]'
+                var existingPhotos = $(this).data('photos');
+
+                if (existingPhotos && existingPhotos.length > 0) {
+                    existingPhotos.forEach(function(photoUrl) {
+                    console.log(photoUrl);
+                        var img = $('<img>').attr('src', photoUrl).css({
+                            'max-width': '100px', // Smaller preview for existing photos
+                            'height': 'auto',
+                            'margin-right': '10px',
+                            'margin-top': '10px',
+                            'border-radius': '5px'
+                        });
+                        $('#edit_photo_preview').append(img);
+                    });
+                }
+
                 $('#editReviewModal').modal('show');
+            });
+
+            $('#edit_photos').on('change', function() {
+                var previewContainer = $('#edit_photo_preview');
+                previewContainer.empty(); // Clear previous previews
+
+                if (this.files && this.files[0]) {
+                    var reader = new FileReader();
+                    reader.onload = function(e) {
+                        var img = $('<img>').attr('src', e.target.result).css({
+                            'max-width': '100%',
+                            'height': 'auto',
+                            'margin-top': '10px',
+                            'border-radius': '5px'
+                        });
+                        previewContainer.append(img);
+                    };
+                    reader.readAsDataURL(this.files[0]);
+                }
+            });
+
+            // Clear photo preview and input when modal is hidden
+            $('#editReviewModal').on('hide.bs.modal', function() {
+                $('#edit_photo_preview').empty();
+                $('#edit_photos').val('');
             });
         });
     </script>
@@ -398,6 +454,7 @@
                         <label for="edit_photos">Ganti Foto (optional)</label>
                         <input type="file" name="photos[]" id="edit_photos" class="form-control" accept="image/*" multiple>
                         <small class="form-text text-muted">Kosongkan jika tidak ingin mengganti. Max 3 foto, 5MB/foto.</small>
+                        <div id="edit_photo_preview" class="mt-2"></div>
                     </div>
 
                 </div>
