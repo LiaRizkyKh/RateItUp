@@ -219,3 +219,12 @@
 .app-main-detail{
     padding-top: 20px !important;
 }
+.index-slider a .slider-item{
+    min-height: 300px;
+}
+.index-slider .slick-slider .slick-track,.index-slider .slick-slider .slick-list{
+    min-height: 300px;
+}
+.index-slider .slick-slider .slick-track,.index-slider .slick-slider .slick-list{
+    min-height: 300px;
+}

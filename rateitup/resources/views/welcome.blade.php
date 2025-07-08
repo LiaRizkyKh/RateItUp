@@ -97,7 +97,7 @@
                                                                     <div class="widget-subheading opacity-8">{{ Auth::check() ? Auth::user()->role ?? 'User' : 'Not logged in' }}</div>
                                                                 </div>
                                                                 <div class="widget-content-right mr-2">
-                                                                    <form method="POST" action="/logout">
+                                                                    <form method="POST" action="{{ route('logout') }}">
                                                                         @csrf
                                                                         <button type="submit" class="btn-logout btn-pill btn-shadow btn-shine btn btn-focus">Logout</button>
                                                                     </form>
@@ -137,44 +137,21 @@
                             <div class="main-card mb-3 card">
                                 <div class="card-body">
                                     <h2 class="card-title dancing-script">Jelajahi, Review dan Temukan Duniamu! </h2>
-                                    <div id="carousel-skeleton" class="row">
-                                        @for($i = 1; $i < 5; $i++) <div class="col-3">
-                                            <div class="slider-item mb-2"></div>
+                                    <div id="carousel-slider" class="slick-slider-responsive index-slider">
+                                        @foreach($posts as $post_item)
+                                            @if(is_array($post_item->photos))
+                                                @foreach($post_item->photos as $photo)
+                                                    <div>
+                                                        <a href="{{ route('review.show', $post_item->id) }}">
+                                                            <div class="slider-item">
+                                                                <img src="{{ $photo }}" class="img-fluid" alt="Review Photo" style="max-height: 300px; margin: auto;">
+                                                            </div>
+                                                        </a>
+                                                    </div>
+                                                @endforeach
+                                            @endif
+                                        @endforeach
                                     </div>
-                                    @endfor
-                                </div>
-                                <div id="carousel-slider" class="slick-slider-responsive d-none">
-                                    <div>
-                                        <div class="slider-item">1</div>
-                                    </div>
-                                    <div>
-                                        <div class="slider-item">2</div>
-                                    </div>
-                                    <div>
-                                        <div class="slider-item">3</div>
-                                    </div>
-                                    <div>
-                                        <div class="slider-item">4</div>
-                                    </div>
-                                    <div>
-                                        <div class="slider-item">5</div>
-                                    </div>
-                                    <div>
-                                        <div class="slider-item">6</div>
-                                    </div>
-                                    <div>
-                                        <div class="slider-item">7</div>
-                                    </div>
-                                    <div>
-                                        <div class="slider-item">8</div>
-                                    </div>
-                                    <div>
-                                        <div class="slider-item">9</div>
-                                    </div>
-                                    <div>
-                                        <div class="slider-item">10</div>
-                                    </div>
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -232,6 +209,7 @@
                                     Created {{ $post_item->created_at->diffForHumans() }}
                                     &nbsp;·&nbsp;
                                     <a href="javascript:void(0)" class="text-muted">{{ $post_item->user->name }}</a>
+                                    <a href="javascript:void(0)" class="text-muted reply-btn" data-post-id="{{ $post_item->id }}">Reply</a>
                                 </div>
                             </div>
                             <div class="d-none d-md-block col-4">
@@ -396,7 +374,7 @@
                             'height': 'auto',
                             'margin-top': '10px',
                             'border-radius': '5px'
-                        });
+                                         });
                         previewContainer.append(img);
                     };
                     reader.readAsDataURL(this.files[0]);
@@ -472,6 +450,84 @@
                 });
 
                 editMap.invalidateSize();
+            });
+
+            // Leaflet Map Initialization for Detail Page (moved from index.blade.php)
+            @if(isset($post) && ($post->latitude !== null && $post->longitude !== null))
+                var detailMap;
+                var detailMarker;
+                var initialLatDetail = {{ $post->latitude }};
+                var initialLngDetail = {{ $post->longitude }};
+                var mapsUrlDetail = "{{ $post->maps_url }}";
+
+                if ($('#gmaps').length) {
+                    detailMap = L.map('gmaps').setView([initialLatDetail, initialLngDetail], 15);
+
+                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                    }).addTo(detailMap);
+
+                    detailMarker = L.marker([initialLatDetail, initialLngDetail]).addTo(detailMap);
+
+                    if (mapsUrlDetail) {
+                        detailMarker.bindPopup("<b>Lokasi Review</b><br><a href='" + mapsUrlDetail + "' target='_blank'>Lihat di Google Maps</a>").openPopup();
+                    } else {
+                        detailMarker.bindPopup("<b>Lokasi Review</b>").openPopup();
+                    }
+
+                    detailMap.invalidateSize();
+                }
+            @elseif(isset($post))
+                // If no coordinates, display a message or hide the map div
+                $('#gmaps').html('<p>No map coordinates available for this review.</p>');
+            @endif
+
+            // Initialize Slick Slider for detail page (moved from index.blade.php)
+            $('.slick-slider-variable').slick({
+                dots: true,
+                infinite: true,
+                variableWidth: true,
+                adaptiveHeight: true
+            });
+
+            // Initialize Star Ratings for detail page (moved from index.blade.php)
+            $('.rating-display').each(function() {
+                var rating = $(this).data('rating');
+                $(this).barrating({
+                    theme: 'css-stars',
+                    initialRating: rating,
+                    readonly: true
+                });
+            });
+
+            // Main reply button toggles the main reply form (moved from index.blade.php)
+            $('.reply-btn-main').on('click', function() {
+                var replyCard = $('.reply-card');
+                replyCard.slideToggle();
+            });
+
+            // Nested reply button functionality (moved from index.blade.php)
+            $('body').on('click', '.reply-btn', function() {
+                var mediaBody = $(this).closest('.media-body');
+                var nestedReplyCard = mediaBody.find('.reply-card-nested');
+                var postId = $(this).data('post-id'); // Get post ID from data attribute
+
+                if (nestedReplyCard.length === 0) {
+                    var formHtml = `
+                        <div class="card mt-3 reply-card-nested" style="display:none;">
+                            <div class="card-body">
+                                <form action="/review/${postId}/reply" method="POST">
+                                    @csrf
+                                    <textarea class="form-control" name="reply" rows="3" placeholder="Write a reply..."></textarea>
+                                    <button type="submit" class="btn btn-primary mt-2">Send</button>
+                                </form>
+                            </div>
+                        </div>`;
+                    $(this).closest('.small').after(formHtml);
+                    mediaBody.find('.reply-card-nested').slideDown();
+                } else {
+                    nestedReplyCard.slideToggle();
+                }
             });
         });
     </script>

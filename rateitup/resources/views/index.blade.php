@@ -13,7 +13,7 @@
                         <div class="page-title-icon">
                             <i class="fa-solid fa-comments"></i>
                         </div>
-                        <div>Ruang Percakapan
+                        <div>{{ $post->title }}
                             <div class="page-title-subheading">Ikuti jalannya diskusi dalam sebuah thread. Baca komentar, balas pesan, dan berinteraksi dengan pengguna lain secara langsung.</div>
                         </div>
                     </div>
@@ -29,7 +29,7 @@
                                     @foreach($post->photos as $photo)
                                     <div>
                                         <div class="slider-item">
-                                            <img src="{{ asset($photo) }}" class="img-fluid" alt="Review Photo" style="max-height: 300px; margin: auto;">
+                                            <img src="{{ $photo }}" class="img-fluid" alt="Review Photo" style="max-height: 300px; margin: auto;">
                                         </div>
                                     </div>
                                     @endforeach
@@ -109,7 +109,7 @@
                                 {{ $detail->reply }}
                             </div>
                             <div class="small mt-2">
-                                <a href="javascript:void(0)" class="text-muted reply-btn">Reply</a>
+                                <a href="javascript:void(0)" class="text-muted reply-btn" data-post-id="{{ $post->id }}">Reply</a>
                             </div>
                         </div>
                     </div>
@@ -131,75 +131,6 @@
     </div>
 </div>
 
-{{-- <script src="https://maps.google.com/maps/api/js?sensor=true"></script> --}}
-<script>
-    $(document).ready(function() {
-        // Initialize Slick Slider
-        $('.slick-slider-variable').slick({
-            dots: true,
-            infinite: true,
-            variableWidth: true,
-            adaptiveHeight: true
-        });
-
-        // Initialize Star Ratings
-        $('.rating-display').each(function() {
-            var rating = $(this).data('rating');
-            $(this).barrating({
-                theme: 'css-stars',
-                initialRating: rating,
-                readonly: true
-            });
-        });
-
-        // Main reply button toggles the main reply form
-        $('.reply-btn-main').on('click', function() {
-            var replyCard = $('.reply-card');
-            replyCard.slideToggle();
-        });
-
-        // Nested reply button functionality
-        $('body').on('click', '.reply-btn', function() {
-            var mediaBody = $(this).closest('.media-body');
-            var nestedReplyCard = mediaBody.find('.reply-card-nested');
-
-            if (nestedReplyCard.length === 0) {
-                var formHtml = `
-                    <div class="card mt-3 reply-card-nested" style="display:none;">
-                        <div class="card-body">
-                            <form action="{{ route('review.reply', $post->id) }}" method="POST">
-                                @csrf
-                                <textarea class="form-control" name="reply" rows="3" placeholder="Write a reply..."></textarea>
-                                <button type="submit" class="btn btn-primary mt-2">Send</button>
-                            </form>
-                        </div>
-                    </div>`;
-                $(this).closest('.small').after(formHtml);
-                mediaBody.find('.reply-card-nested').slideDown();
-            } else {
-                nestedReplyCard.slideToggle();
-            }
-        });
-
-
-        // 5. Inisialisasi Peta
-        // Tentukan koordinat tengah peta (latitude, longitude) dan tingkat zoom
-        // Koordinat Monas: [-6.1752, 106.8272]
-        var map = L.map('gmaps').setView([-6.1752, 106.8272], 15);
-
-        // Tambahkan 'tile layer' dari OpenStreetMap
-        // Tile layer adalah gambar-gambar peta yang ditampilkan
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        }).addTo(map);
-
-        // Tambahkan penanda (marker) ke peta
-        var marker = L.marker([-6.1752, 106.8272]).addTo(map);
-
-        // Tambahkan popup pada marker
-        marker.bindPopup("<b>Monumen Nasional</b><br>Ini adalah jantung kota Jakarta.").openPopup();
-    });
-</script>
 @else
 <div class="app-main__inner">
     <p>Review not found.</p>
