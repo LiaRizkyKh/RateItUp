@@ -18,12 +18,14 @@ $post = $post ?? null;
                         </div>
                     </div>
                     <div class="page-title-actions">
+                        @auth
                         <form action="{{ route('review.visit', $post->id) }}" method="POST" id="visit-form">
                             @csrf
                             <button type="submit" data-toggle="tooltip" title="Sudah dikunjungi" data-placement="bottom" class="btn-shadow mr-3 btn btn-dark" id="visit-btn">
                                 <i class="fa fa-star"></i> Sudah dikunjungi
                             </button>
                         </form>
+                        @endauth
                     </div>
                 </div>
             </div>
@@ -89,9 +91,11 @@ $post = $post ?? null;
                             </select></div>
                     </div>
                     <div class="px-4 pt-3">
+                        @auth
                         <button type="button" class="btn btn-primary reply-btn-main">
                             <i class="ion ion-md-create"></i>&nbsp; Reply
                         </button>
+                        @endauth
                     </div>
                 </div>
             </div>
@@ -117,7 +121,9 @@ $post = $post ?? null;
                                 {{ $detail->reply }}
                             </div>
                             <div class="small mt-2">
+                                @auth
                                 <a href="javascript:void(0)" class="text-muted reply-btn" data-post-id="{{ $post->id }}">Reply</a>
+                                @endauth
                             </div>
                         </div>
                     </div>
@@ -139,7 +145,11 @@ $post = $post ?? null;
             <script>
                 $(document).ready(function() {
                     var visitBtn = $('#visit-btn');
-                    var visited = {{ $post->visits->where('user_id', auth()->id())->count() > 0 ? 'true' : 'false' }};
+                    var visited = {
+                        {
+                            $post - > visits - > where('user_id', auth() - > id()) - > count() > 0 ? 'true' : 'false'
+                        }
+                    };
 
                     function updateButtonState() {
                         if (visited) {
@@ -159,16 +169,17 @@ $post = $post ?? null;
                         e.preventDefault();
 
                         $.ajax({
-                            url: $(this).attr('action'),
-                            method: 'POST',
-                            data: $(this).serialize(),
-                            success: function(response) {
+                            url: $(this).attr('action')
+                            , method: 'POST'
+                            , data: $(this).serialize()
+                            , success: function(response) {
                                 visited = response.visited;
                                 updateButtonState();
                             }
                         });
                     });
                 });
+
             </script>
         </div>
     </div>

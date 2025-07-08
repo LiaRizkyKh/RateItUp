@@ -206,7 +206,7 @@
                                     Created {{ $post_item->created_at->diffForHumans() }}
                                     &nbsp;·&nbsp;
                                     <a href="javascript:void(0)" class="text-muted">{{ $post_item->user->name }}</a>
-                                    <a href="javascript:void(0)" class="text-muted reply-btn" data-post-id="{{ $post_item->id }}">Reply</a>
+                                    {{-- <a href="javascript:void(0)" class="text-muted reply-btn" data-post-id="{{ $post_item->id }}">Reply</a> --}}
                                 </div>
                             </div>
                             <div class="d-none d-md-block col-4">
