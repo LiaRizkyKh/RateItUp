@@ -18,7 +18,7 @@ $post = $post ?? null;
                         </div>
                     </div>
                     <div class="page-title-actions">
-                        <form action="{{ route('review.visit', $post->id) }}" method="POST" id="visit-form" @auth {{ "class='d-none'" }} @endauth>
+                        <form action="{{ route('review.visit', $post->id) }}" method="POST" id="visit-form" @unless(Auth::check()) {{ "class=d-none" }} @endunless>
                             @csrf
                             <button type="submit" data-toggle="tooltip" title="Sudah dikunjungi" data-placement="bottom" class="btn-shadow mr-3 btn btn-dark" id="visit-btn">
                                 <i class="fa fa-star"></i> Sudah dikunjungi
@@ -88,7 +88,7 @@ $post = $post ?? null;
                                 <option value="5">5</option>
                             </select></div>
                     </div>
-                    <div class="px-4 pt-3"  @auth {{ "class='d-none'" }} @endauth>
+                    <div class="px-4 pt-3 @unless(Auth::check()) {{ "d-none" }} @endunless"  >
                         <button type="button" class="btn btn-primary reply-btn-main">
                             <i class="ion ion-md-create"></i>&nbsp; Reply
                         </button>
@@ -117,7 +117,7 @@ $post = $post ?? null;
                                 {{ $detail->reply }}
                             </div>
                             <div class="small mt-2">
-                                <a href="javascript:void(0)"   class="text-muted reply-btn @auth {{ " d-none" }} @endauth" data-post-id="{{ $post->id }}">Reply</a>
+                                <a href="javascript:void(0)"   class="text-muted reply-btn @unless(Auth::check()) {{ "d-none" }} @endunless" data-post-id="{{ $post->id }}">Reply</a>
                             </div>
                         </div>
                     </div>
