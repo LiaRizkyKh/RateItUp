@@ -97,10 +97,7 @@
                                                                     <div class="widget-subheading opacity-8">{{ Auth::check() ? Auth::user()->role ?? 'User' : 'Not logged in' }}</div>
                                                                 </div>
                                                                 <div class="widget-content-right mr-2">
-                                                                    <form method="POST" action="{{ route('logout') }}">
-                                                                        @csrf
-                                                                        <button type="submit" class="btn-logout btn-pill btn-shadow btn-shine btn btn-focus">Logout</button>
-                                                                    </form>
+                                                                    <a href="{{ route('logout') }}" class="btn-logout btn-pill btn-shadow btn-shine btn btn-focus">Logout</a>
                                                                 </div>
                                                             </div>
                                                         </div>
