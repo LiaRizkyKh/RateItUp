@@ -157,13 +157,13 @@ class ReviewController extends Controller
 
         if ($visit) {
             $visit->delete();
-            return response()->json(['visited' => false]);
+            return response()->json(['visited' => false]);/*back()->with('success', 'Visited mark change successfully!');*/
         } else {
             \App\Models\ReviewVisit::create([
                 'user_id' => $user->id,
                 'review_id' => $review->id,
             ]);
-            return response()->json(['visited' => true]);
+            return response()->json(['visited' => true]);/*back()->with('success', 'Visited mark change successfully!');*/
         }
     }
 }
