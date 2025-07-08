@@ -45,3 +45,4 @@ Route::resource('review', ReviewController::class)->only(['edit', 'destroy']);
 
 Route::put('/review/{id}', [ReviewController::class, 'update'])->name('review.update');
 Route::post('/review/{id}/reply', [ReviewController::class, 'reply'])->name('review.reply');
+Route::post('/review/{id}/visit', [ReviewController::class, 'visit'])->name('review.visit');

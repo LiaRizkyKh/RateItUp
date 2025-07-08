@@ -24,7 +24,7 @@ class ReviewController extends Controller
 
     public function show($id)
     {
-        $post = Review::with(['user', 'details.user'])->findOrFail($id);
+        $post = Review::with(['user', 'details.user', 'visits'])->findOrFail($id);
         return view('welcome', ['post' => $post]);
     }
 
@@ -144,5 +144,26 @@ class ReviewController extends Controller
         ]);
 
         return back()->with('success', 'Reply posted successfully!');
+    }
+
+    public function visit(Request $request, $id)
+    {
+        $review = Review::findOrFail($id);
+        $user = Auth::user();
+
+        $visit = \App\Models\ReviewVisit::where('user_id', $user->id)
+            ->where('review_id', $review->id)
+            ->first();
+
+        if ($visit) {
+            $visit->delete();
+            return response()->json(['visited' => false]);
+        } else {
+            \App\Models\ReviewVisit::create([
+                'user_id' => $user->id,
+                'review_id' => $review->id,
+            ]);
+            return response()->json(['visited' => true]);
+        }
     }
 }

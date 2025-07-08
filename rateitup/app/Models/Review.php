@@ -49,4 +49,8 @@ class Review extends Model
         return $this->hasMany(ReviewDetail::class);
     }
 
+    public function visits()
+    {
+        return $this->hasMany(ReviewVisit::class);
+    }
 }

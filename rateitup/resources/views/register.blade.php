@@ -7,7 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta http-equiv="Content-Language" content="en">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Register - ArchitectUI HTML Bootstrap 4 Dashboard Template</title>
+    <title>Register - Rate It Up</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no" />
     <meta name="description" content="ArchitectUI HTML Bootstrap 4 Dashboard Template">
 
@@ -92,9 +92,8 @@
                                     <div class="position-relative h-100 d-flex justify-content-center align-items-center bg-premium-dark" tabindex="-1">
                                         <div class="slide-img-bg" style="background-image: url('/images/originals/citynights.jpg');"></div>
                                         <div class="slider-content">
-                                            <h3>Scalable, Modular, Consistent</h3>
-                                            <p>Easily exclude the components you don't require. Lightweight, consistent
-                                                Bootstrap based styles across all elements and components
+                                            <h3>Jelajahi, Review dan Temukan Duniamu!</h3>
+                                            <p>Mulailah petualanganmu menjelajahi tempat baru, bagikan pengalaman lewat review, dan temukan sisi dunia yang paling cocok untukmu.
                                             </p>
                                         </div>
                                     </div>

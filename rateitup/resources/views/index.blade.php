@@ -1,6 +1,6 @@
 @php
-    // This ensures that $post is available, preventing errors if it's not passed.
-    $post = $post ?? null;
+// This ensures that $post is available, preventing errors if it's not passed.
+$post = $post ?? null;
 @endphp
 
 @if($post)
@@ -17,6 +17,14 @@
                             <div class="page-title-subheading">Ikuti jalannya diskusi dalam sebuah thread. Baca komentar, balas pesan, dan berinteraksi dengan pengguna lain secara langsung.</div>
                         </div>
                     </div>
+                    <div class="page-title-actions">
+                        <form action="{{ route('review.visit', $post->id) }}" method="POST" id="visit-form">
+                            @csrf
+                            <button type="submit" data-toggle="tooltip" title="Sudah dikunjungi" data-placement="bottom" class="btn-shadow mr-3 btn btn-dark" id="visit-btn">
+                                <i class="fa fa-star"></i> Sudah dikunjungi
+                            </button>
+                        </form>
+                    </div>
                 </div>
             </div>
             <div class="main-card mb-3 card">
@@ -25,17 +33,17 @@
                         <div class="col-md-6 text-center">
                             <div class="card-title dancing-script">Photos</div>
                             @if(is_array($post->photos) && count($post->photos) > 0)
-                                <div class="slick-slider-variable">
-                                    @foreach($post->photos as $photo)
-                                    <div>
-                                        <div class="slider-item">
-                                            <img src="{{ $photo }}" class="img-fluid" alt="Review Photo" style="max-height: 300px; margin: auto;">
-                                        </div>
+                            <div class="slick-slider-variable">
+                                @foreach($post->photos as $photo)
+                                <div>
+                                    <div class="slider-item">
+                                        <img src="{{ $photo }}" class="img-fluid" alt="Review Photo" style="max-height: 300px; margin: auto;">
                                     </div>
-                                    @endforeach
                                 </div>
+                                @endforeach
+                            </div>
                             @else
-                                <p>No photos available.</p>
+                            <p>No photos available.</p>
                             @endif
                         </div>
                         <div class="col-md-6 text-center">
@@ -49,12 +57,12 @@
                 <div class="card-header">
                     <div class="media flex-wrap w-100 align-items-center">
                         @php
-                            $postUserAvatar = 'user-icon.jpg';
-                            if ($post->user->gender === 'Male') {
-                                $postUserAvatar = 'boy-icon.jpg';
-                            } elseif ($post->user->gender === 'Female') {
-                                $postUserAvatar = 'girl-icon.jpg';
-                            }
+                        $postUserAvatar = 'user-icon.jpg';
+                        if ($post->user->gender === 'Male') {
+                        $postUserAvatar = 'boy-icon.jpg';
+                        } elseif ($post->user->gender === 'Female') {
+                        $postUserAvatar = 'girl-icon.jpg';
+                        }
                         @endphp
                         <img style="width: 40px; height: auto;" src="{{ asset('images/avatars/' . $postUserAvatar) }}" class="d-block ui-w-40 rounded-circle" alt="">
                         <div class="media-body ml-3">
@@ -73,12 +81,12 @@
                 <div class="card-footer d-flex flex-wrap justify-content-between align-items-center px-0 pt-0 pb-3">
                     <div class="px-4 pt-3">
                         <div class="br-wrapper br-theme-css-stars"><select class="rating-display" data-rating="{{ $post->rating }}" disabled="" style="display: none;">
-                            <option value="1">1</option>
-                            <option value="2">2</option>
-                            <option value="3">3</option>
-                            <option value="4">4</option>
-                            <option value="5">5</option>
-                        </select></div>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                            </select></div>
                     </div>
                     <div class="px-4 pt-3">
                         <button type="button" class="btn btn-primary reply-btn-main">
@@ -93,12 +101,12 @@
                 <div class="card-body">
                     <div class="media">
                         @php
-                            $detailUserAvatar = 'user-icon.jpg';
-                            if ($detail->user->gender === 'Male') {
-                                $detailUserAvatar = 'boy-icon.jpg';
-                            } elseif ($detail->user->gender === 'Female') {
-                                $detailUserAvatar = 'girl-icon.jpg';
-                            }
+                        $detailUserAvatar = 'user-icon.jpg';
+                        if ($detail->user->gender === 'Male') {
+                        $detailUserAvatar = 'boy-icon.jpg';
+                        } elseif ($detail->user->gender === 'Female') {
+                        $detailUserAvatar = 'girl-icon.jpg';
+                        }
                         @endphp
                         <img style="width: 40px; height: auto;" src="{{ asset('images/avatars/' . $detailUserAvatar) }}" alt="" class="d-block ui-w-40 rounded-circle">
                         <div class="media-body ml-4">
@@ -127,6 +135,41 @@
                     </form>
                 </div>
             </div>
+
+            <script>
+                $(document).ready(function() {
+                    var visitBtn = $('#visit-btn');
+                    var visited = {{ $post->visits->where('user_id', auth()->id())->count() > 0 ? 'true' : 'false' }};
+
+                    function updateButtonState() {
+                        if (visited) {
+                            visitBtn.html('Sudah dikunjungi');
+                            visitBtn.css('background-color', '#F6F8D5');
+                            visitBtn.css('color', '#000');
+                        } else {
+                            visitBtn.html('<i class="fa fa-star"></i> Tandai sudah dikunjungi');
+                            visitBtn.css('background-color', ''); // Revert to default
+                            visitBtn.css('color', '');
+                        }
+                    }
+
+                    updateButtonState();
+
+                    $('#visit-form').on('submit', function(e) {
+                        e.preventDefault();
+
+                        $.ajax({
+                            url: $(this).attr('action'),
+                            method: 'POST',
+                            data: $(this).serialize(),
+                            success: function(response) {
+                                visited = response.visited;
+                                updateButtonState();
+                            }
+                        });
+                    });
+                });
+            </script>
         </div>
     </div>
 </div>
